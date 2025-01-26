@@ -40,7 +40,7 @@ agentOperatorImageVersion=${39}
 agentOperatorImageTag=${40}
 
 
-echo "--------------------starting for public cluster--------------------"
+echo "--------------------starting from bastion host inside--------------------"
 
 #command rm /root/.kube/config
 #command rm /root/.aws/config /root/.aws/credentials

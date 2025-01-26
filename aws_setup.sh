@@ -42,18 +42,20 @@ agentOperatorImageVersion=${39}
 agentOperatorImageTag=${40}
 host_ip=${41}
 github_content_root_path=${42}
+script_location=${43}
 
 if [ "$clusterType" = "private" ]; then
 echo "--------------------starting for private cluster--------------------"
-
 #cd /
-
-#scp -i "$private_key_path" -o StrictHostKeyChecking=no -r /static/aws/aws_setup_inside_bastion.sh ubuntu@"$host_ip":/aws_setup_inside_bastion.sh
-#sleep 30
-
+command chmod 0600 "$private_key_path"
+scp -i "$private_key_path" -o StrictHostKeyChecking=no -r "'$script_location'aws/aws_setup_inside_bastion.sh" ubuntu@"$host_ip":~/aws_setup_inside_bastion.sh
+sleep 30
 echo "copy files from local to server"
+
+echo "ssh -i "$private_key_path" -o StrictHostKeyChecking=no ubuntu@""$host_ip"""
+
 command ssh -i "$private_key_path" -o StrictHostKeyChecking=no ubuntu@"$host_ip" <<EFO
-echo "entered into bastion host"
+echo "---------entered into bastion host---------"
 
 command snap install aws-cli --classic
 
@@ -72,9 +74,10 @@ command aws eks update-kubeconfig --region "$aws_region" --name "$aws_cluster_na
 command kubectl get node;
 echo '---------cluster config update done---------'
 
-command cd / && sudo chmod a+x aws_setup_inside_bastion.sh;
+command chmod a+x ~/aws_setup_inside_bastion.sh;
 
-source $github_content_root_path/aws_setup_inside_bastion.sh "$aws_access_key" \
+#source ~/aws_setup_inside_bastion.sh "$aws_access_key" \
+source curl -sSL " + applicationProperties.getGitContentRootUrl() + "/aws_setup_inside_bastion.sh | sh -s -- "$aws_access_key" \
                                    "$aws_secret_key" \
                                    "$aws_region" \
                                    "$aws_cluster_name" \
@@ -121,8 +124,8 @@ else
 
 echo "--------------------starting for public cluster--------------------"
 
-#command rm /root/.kube/config
-#command rm /root/.aws/config /root/.aws/credentials
+command rm /root/.kube/config
+command rm /root/.aws/config /root/.aws/credentials
 command aws configure set aws_access_key_id "$aws_access_key"
 command aws configure set aws_secret_access_key "$aws_secret_key"
 command aws configure set default.region "$aws_region"
