@@ -41,14 +41,16 @@ temporalNamespace=${38}
 agentOperatorImageVersion=${39}
 agentOperatorImageTag=${40}
 host_ip=${41}
-
-github_content_root_path=https://github.com/Jahadul-Rakib/klovercloud-cluster-configure-scripts/blob/master
+github_content_root_path=${42}
 
 if [ "$clusterType" = "private" ]; then
 echo "--------------------starting for private cluster--------------------"
-cd /
-scp -i "$private_key_path" -o StrictHostKeyChecking=no -r /static/aws/aws_setup_inside_bastion.sh ubuntu@"$host_ip":/aws_setup_inside_bastion.sh
-sleep 30
+
+#cd /
+
+#scp -i "$private_key_path" -o StrictHostKeyChecking=no -r /static/aws/aws_setup_inside_bastion.sh ubuntu@"$host_ip":/aws_setup_inside_bastion.sh
+#sleep 30
+
 echo "copy files from local to server"
 command ssh -i "$private_key_path" -o StrictHostKeyChecking=no ubuntu@"$host_ip" <<EFO
 echo "entered into bastion host"
@@ -72,7 +74,7 @@ echo '---------cluster config update done---------'
 
 command cd / && sudo chmod a+x aws_setup_inside_bastion.sh;
 
-source aws_setup_inside_bastion.sh "$aws_access_key" \
+source $github_content_root_path/aws_setup_inside_bastion.sh "$aws_access_key" \
                                    "$aws_secret_key" \
                                    "$aws_region" \
                                    "$aws_cluster_name" \
